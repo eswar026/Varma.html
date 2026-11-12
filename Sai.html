@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ParkEase - Parking Reservation</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+header {
+    background: #14213d;
+    color: white;
+    padding: 20px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+header h1 {
+    font-size: 25px;
+}
+
+header span {
+    color: #38bdf8;
+}
+
+header p {
+    font-size: 13px;
+    margin-top: 5px;
+    color: #cbd5e1;
+}
+
+.container {
+    width: 90%;
+    max-width: 1150px;
+    margin: 30px auto;
+}
+
+.welcome {
+    margin-bottom: 25px;
+}
+
+.welcome h2 {
+    font-size: 27px;
+    margin-bottom: 8px;
+}
+
+.welcome p {
+    color: #64748b;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.stat-card {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px #0000000d;
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+.stat-card p {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.panel {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 12px #0000000d;
+}
+
+.panel h2 {
+    font-size: 21px;
+    margin-bottom: 20px;
+}
+
+.legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+    font-size: 13px;
+}
+
+.legend span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.dot {
+    width: 13px;
+    height: 13px;
+    display: inline-block;
+    border-radius: 4px;
+}
+
+.green { background: #22c55e; }
+.red { background: #ef4444; }
+.blue { background: #2563eb; }
+
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.slot {
+    padding: 22px 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.slot small {
+    display: block;
+    margin-top: 8px;
+    font-weight: normal;
+}
+
+.slot.available {
+    background: #dcfce7;
+    color: #166534;
+    border-color: #86efac;
+}
+
+.slot.booked {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #fca5a5;
+    cursor: not-allowed;
+}
+
+.slot.selected {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-color: #2563eb;
+}
+
+.slot.available:hover {
+    transform: translateY(-3px);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.field input,
+.field select {
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    outline: none;
+    font-size: 14px;
+    width: 100%;
+}
+
+.field input:focus,
+.field select:focus {
+    border-color: #2563eb;
+}
+
+.amount {
+    background: #eff6ff;
+    padding: 18px;
+    border-radius: 8px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.book-btn {
+    background: #2563eb;
+    color: white;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.book-btn:hover {
+    background: #1d4ed8;
+}
+
+.cancel-btn {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 8px 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px;
+}
+
+th, td {
+    padding: 13px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 13px;
+}
+
+th {
+    background: #f8fafc;
+    color: #475569;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+.empty {
+    text-align: center;
+    padding: 25px;
+    color: #64748b;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    background: #14213d;
+    color: white;
+    margin-top: 40px;
+    font-size: 13px;
+}
+
+@media(max-width: 700px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .slot-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    header {
+        padding: 18px 5%;
+    }
+
+    .container {
+        width: 94%;
+    }
+
+    .panel {
+        padding: 17px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <h1>🅿 Park<span>Ease</span></h1>
+        <p>Smart Parking Slot Reservation System</p>
+    </div>
+    <div>Online Parking Booking</div>
+</header>
+
+<div class="container">
+
+    <section class="welcome">
+        <h2>Parking Dashboard</h2>
+        <p>Find your parking space and reserve it easily.</p>
+    </section>
+
+    <section class="stats">
+        <div class="stat-card">
+            <h3>Total Parking Slots</h3>
+            <p id="totalSlots">12</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Available Slots</h3>
+            <p id="availableSlots">12</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Booked Slots</h3>
+            <p id="bookedSlots">0</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Choose Your Parking Slot</h2>
+
+        <div class="legend">
+            <span><i class="dot green"></i> Available</span>
+            <span><i class="dot red"></i> Booked</span>
+            <span><i class="dot blue"></i> Selected</span>
+        </div>
+
+        <div class="slot-grid" id="slotGrid"></div>
+    </section>
+
+    <section class="panel">
+        <h2>Customer Booking Details</h2>
+
+        <form id="bookingForm">
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label>Customer Name</label>
+                    <input type="text" id="name"
+                    placeholder="Enter full name" required>
+                </div>
+
+                <div class="field">
+                    <label>Mobile Number</label>
+                    <input type="tel" id="phone"
+                    placeholder="10 digit mobile number"
+                    pattern="[0-9]{10}" maxlength="10" required>
+                </div>
+
+                <div class="field">
+                    <label>Vehicle Number</label>
+                    <input type="text" id="vehicle"
+                    placeholder="Example: AP05AB1234"
+                    required>
+                </div>
+
+                <div class="field">
+                    <label>Booking Date</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <div class="field">
+                    <label>Parking Duration</label>
+                    <select id="duration">
+                        <option value="1">1 Hour</option>
+                        <option value="2">2 Hours</option>
+                        <option value="3">3 Hours</option>
+                        <option value="4">4 Hours</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Selected Parking Slot</label>
+                    <input type="text" id="selectedSlot"
+                    placeholder="Select a parking slot above"
+                    readonly required>
+                </div>
+
+            </div>
+
+            <div class="amount">
+                <span>Total Amount</span>
+                <span id="totalAmount">₹50</span>
+            </div>
+
+            <button type="submit" class="book-btn">
+                Confirm Booking
+            </button>
+
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>Booking History</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Customer</th>
+                        <th>Vehicle</th>
+                        <th>Slot</th>
+                        <th>Date</th>
+                        <th>Duration</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="bookingHistory"></tbody>
+            </table>
+        </div>
+
+        <p id="emptyMessage" class="empty">
+            No bookings available yet.
+        </p>
+    </section>
+
+</div>
+
+<footer>
+    © 2026 ParkEase | Parking Slot Reservation System
+</footer>
+
+<script>
+const TOTAL_SLOTS = 12;
+const PRICE_PER_HOUR = 50;
+const STORAGE_KEY = "parkingBookings";
+
+let selectedSlot = null;
+
+let bookings = [];
+
+try {
+    const saved = JSON.parse(
+        localStorage.getItem(STORAGE_KEY) || "[]"
+    );
+
+    bookings = Array.isArray(saved) ? saved : [];
+} catch (error) {
+    bookings = [];
+}
+
+const slotGrid = document.getElementById("slotGrid");
+const bookingForm = document.getElementById("bookingForm");
+const selectedSlotInput = document.getElementById("selectedSlot");
+const durationInput = document.getElementById("duration");
+const dateInput = document.getElementById("date");
+
+function todayString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+dateInput.min = todayString();
+dateInput.value = todayString();
+
+function saveBookings() {
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(bookings)
+    );
+}
+
+function getBookingsForDate(date) {
+    return bookings.filter(
+        booking => booking.date === date
+    );
+}
+
+function renderSlots() {
+    slotGrid.innerHTML = "";
+
+    const currentDate = dateInput.value;
+    const dayBookings = getBookingsForDate(currentDate);
+
+    for (let i = 1; i <= TOTAL_SLOTS; i++) {
+
+        const slotName = "P" + String(i).padStart(2, "0");
+
+        const isBooked = dayBookings.some(
+            booking => booking.slot === slotName
+        );
+
+        const isSelected = selectedSlot === slotName;
+
+        const slot = document.createElement("div");
+
+        slot.className = "slot " +
+            (isBooked ? "booked" :
+            isSelected ? "selected" : "available");
+
+        const title = document.createElement("div");
+        title.textContent = slotName;
+
+        const status = document.createElement("small");
+        status.textContent = isBooked ? "Booked" :
+            isSelected ? "Selected" : "Available";
+
+        slot.appendChild(title);
+        slot.appendChild(status);
+
+        if (!isBooked) {
+            slot.addEventListener("click", function() {
+                selectedSlot = slotName;
+                selectedSlotInput.value = slotName;
+                renderSlots();
+            });
+        }
+
+        slotGrid.appendChild(slot);
+    }
+
+    updateStats(dayBookings);
+}
+
+function updateStats(dayBookings) {
+    const bookedCount = dayBookings.length;
+
+    document.getElementById("totalSlots").textContent =
+        TOTAL_SLOTS;
+
+    document.getElementById("bookedSlots").textContent =
+        bookedCount;
+
+    document.getElementById("availableSlots").textContent =
+        TOTAL_SLOTS - bookedCount;
+}
+
+function updateAmount() {
+    const duration = Number(durationInput.value);
+
+    const amount = duration * PRICE_PER_HOUR;
+
+    document.getElementById("totalAmount").textContent =
+        "₹" + amount;
+}
+
+durationInput.addEventListener("change", updateAmount);
+
+dateInput.addEventListener("change", function() {
+    selectedSlot = null;
+    selectedSlotInput.value = "";
+    renderSlots();
+});
+
+bookingForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const vehicle = document.getElementById("vehicle").value.trim();
+    const date = dateInput.value;
+    const duration = Number(durationInput.value);
+
+    if (!name || !phone || !vehicle || !selectedSlot || !date) {
+        alert("Please fill all details and select a parking slot.");
+        return;
+    }
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+        alert("Please enter a valid 10-digit mobile number.");
+        return;
+    }
+
+    if (date < todayString()) {
+        alert("Please select today or a future date.");
+        return;
+    }
+
+    const alreadyBooked = bookings.some(
+        booking =>
+            booking.slot === selectedSlot &&
+            booking.date === date
+    );
+
+    if (alreadyBooked) {
+        alert("Sorry! This parking slot is already booked.");
+        selectedSlot = null;
+        selectedSlotInput.value = "";
+        renderSlots();
+        return;
+    }
+
+    const booking = {
+        id: "PK" + Date.now(),
+        name: name,
+        phone: phone,
+        vehicle: vehicle.toUpperCase(),
+        slot: selectedSlot,
+        date: date,
+        duration: duration,
+        amount: duration * PRICE_PER_HOUR
+    };
+
+    bookings.push(booking);
+    saveBookings();
+
+    alert(
+        "BOOKING SUCCESSFUL!\n\n" +
+        "Booking ID: " + booking.id + "\n" +
+        "Customer: " + booking.name + "\n" +
+        "Parking Slot: " + booking.slot + "\n" +
+        "Date: " + booking.date + "\n" +
+        "Duration: " + booking.duration + " hour(s)\n" +
+        "Total Amount: ₹" + booking.amount
+    );
+
+    bookingForm.reset();
+
+    dateInput.value = todayString();
+    dateInput.min = todayString();
+
+    selectedSlot = null;
+    selectedSlotInput.value = "";
+
+    updateAmount();
+    renderSlots();
+    renderHistory();
+});
+
+function renderHistory() {
+    const history = document.getElementById("bookingHistory");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+    history.innerHTML = "";
+
+    emptyMessage.style.display =
+        bookings.length === 0 ? "block" : "none";
+
+    bookings.slice().reverse().forEach(function(booking) {
+
+        const row = document.createElement("tr");
+
+        const values = [
+            booking.id,
+            booking.name,
+            booking.vehicle,
+            booking.slot,
+            booking.date,
+            booking.duration + " hour(s)",
+            "₹" + booking.amount
+        ];
+
+        values.forEach(function(value) {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
+
+        const actionCell = document.createElement("td");
+        const cancelButton = document.createElement("button");
+
+        cancelButton.textContent = "Cancel";
+        cancelButton.className = "cancel-btn";
+
+        cancelButton.addEventListener("click", function() {
+            cancelBooking(booking.id);
+        });
+
+        actionCell.appendChild(cancelButton);
+        row.appendChild(actionCell);
+
+        history.appendChild(row);
+    });
+}
+
+function cancelBooking(id) {
+    const confirmCancel = confirm(
+        "Are you sure you want to cancel this booking?"
+    );
+
+    if (!confirmCancel) return;
+
+    bookings = bookings.filter(
+        booking => booking.id !== id
+    );
+
+    saveBookings();
+    renderSlots();
+    renderHistory();
+
+    alert("Booking cancelled successfully!");
+}
+
+updateAmount();
+renderSlots();
+renderHistory();
+</script>
+
+</body>
+</html>
